@@ -1,4 +1,4 @@
-const express = 'express';
+const express = require('express');
 
 const router = express.Router();
 
@@ -36,9 +36,13 @@ function validateUserId(req, res, next) {
 
 };
 
-function validateUser(req, res, next) {
-
-};
+// function validateUser(req, res, next) {
+//     if (req.body && req.body.name) {
+//         next();
+//     } else {
+//       res.status(400).json({ message: "Not a valid user!"})
+//     }
+//   }
 
 function validatePost(req, res, next) {
 
