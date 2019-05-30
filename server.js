@@ -8,11 +8,11 @@ const server = express();
 
 server.use(express.json());
 server.use(helmet());
-
+server.use(logger);
 server.use('/posts', postRouter)
 server.use('/users', userRouter)
 
-server.get('/', logger, (req, res) => {
+server.get('/', (req, res) => {
   res.send(`<h2>Let's write some middleware!</h2>`)
 });
 

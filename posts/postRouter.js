@@ -2,6 +2,8 @@ const express = require('express');
 
 const router = express.Router();
 
+const db = require('./postDb');
+
 router.get('/', async (req, res) => {
 try {
     const posts = await db.get(req.query);
@@ -53,13 +55,8 @@ try {
 
 // custom middleware
 
-// function validateUserId(req, res, next) {
-//     if (!user_id) {
-//       res.status(400).json({ message: "invalid user id" })
-//     } else {
-//       res.status(200).json({ user: req.user })
-//     }
-//     next();
-//   }
+function validatePostId(req, res, next) {
+    
+  }
 
 module.exports = router;
