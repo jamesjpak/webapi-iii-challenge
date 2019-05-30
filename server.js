@@ -13,7 +13,7 @@ server.use('/posts', postRouter)
 server.use('/users', userRouter)
 
 server.get('/', (req, res) => {
-  res.send(`<h2>Let's write some middleware!</h2>`)
+  res.send(`<h2> I did it!!! </h2>`)
 });
 
 //custom middleware

@@ -17,21 +17,32 @@ router.post("/", validateUser, async (req, res) => {
   }
 });
 
-router.post("/:id/posts", validatePost, async (req, res) => {
-  const postInfo = { text: req.body.text, user_id: req.params.id };
+router.post("/:id/posts", validateUserId, validatePost, async (req, res) => {
 
-  try {
-    const post = await postDb.insert(postInfo);
-    res.status(210).json(post);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error adding the post"
-    });
-  }
+const newPost = { text: req.body.text, user_id: req.params.id };
+postDb
+.insert(newPost)
+.then( post => {
+    res.status(201).json(post)
+})
+.catch( error => {
+    res.status(500).json({ message: "Error adding the post!" })
+})
+
+//   const postInfo = { text: req.body.text, user_id: req.params.id };
+
+//   try {
+//     const post = await postDb.insert(postInfo);
+//     res.status(210).json(post);
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({
+//       message: "Error adding the post"
+//     });
+//   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", validateUser, async (req, res) => {
   try {
     const users = await db.get(req.query);
     res.status(200).json(users);
@@ -46,19 +57,31 @@ router.get("/:id", validateUserId, (req, res) => {
   res.status(200).json(req.user);
 });
 
-router.get("/:id/posts", async (req, res) => {
-  try {
-    const posts = await db.getUserPosts(req.params.id);
+router.get("/:id/posts", validateUserId, (req, res) => {
+    db.getUsersPosts(req.params.id) 
+    .then( posts => {
+        if (posts) {
+            res.status(200).json(posts)
+        } else {
+            res.status(404).json({ message: "user post not found!"})
+        }
+    })
+    .catch(err => {
+        res.status(500).json({ message: "AHHHHHH SOMETHING IS WRONG"})
+    })
+//   try {
+//     const posts = await db.getUserPosts(req.params.id);
 
-    res.status(200).json(posts);
-  } catch (error) {
-    res.status(500).json({
-      message: "Error getting the posts for the user"
-    });
-  }
+//     res.status(200).json(posts);
+//   } catch (error) {
+//     res.status(500).json({
+//       message: "Error getting the posts for the user"
+//     });
+//   }
 });
 
 router.delete("/:id", async (req, res) => {
+
   try {
     const count = await db.remove(req.params.id);
     if (count > 0) {
@@ -73,7 +96,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", validateUserId, async (req, res) => {
   try {
     const user = await db.update(req.params.id, req.body);
     if (user) {
@@ -134,7 +157,7 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
     if ( !req.body ) {
-        res.status(400).json({ message: "missing user data" })
+        res.status(400).json({ message: "missing post data" })
     } else if ( !req.body.text ) {
         res.status(400).json({ message: "missing required text field" })
     } else {
